@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#030508">
+  <title>До 3 ноября 2026 — by: .dizoff1</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="scene">
+    <div class="background"></div>
+    <div class="darken"></div>
+    <div class="scanlines"></div>
+
+    <section class="counter" aria-label="Обратный отсчёт до 3 ноября 2026">
+      <article class="card orange">
+        <div class="number" id="days">00</div>
+        <div class="label">ДНЕЙ</div>
+      </article>
+
+      <article class="card blue">
+        <div class="number" id="hours">00</div>
+        <div class="label">ЧАСОВ</div>
+      </article>
+
+      <article class="card green">
+        <div class="number" id="minutes">00</div>
+        <div class="label">МИНУТ</div>
+      </article>
+
+      <article class="card purple">
+        <div class="number" id="seconds">00</div>
+        <div class="label">СЕКУНД</div>
+      </article>
+    </section>
+
+    <div class="done" id="done">☠ ВРЕМЯ ПРИШЛО</div>
+  </main>
+
+<script>
+  // 3 ноября 2026, 00:00:00 по локальному времени компьютера посетителя.
+  const target = new Date(2026, 10, 3, 0, 0, 0);
+
+  const fields = {
+    days: document.querySelector("#days"),
+    hours: document.querySelector("#hours"),
+    minutes: document.querySelector("#minutes"),
+    seconds: document.querySelector("#seconds")
+  };
+
+  const done = document.querySelector("#done");
+  const previous = {};
+
+  function pad(value) {
+    return String(value).padStart(2, "0");
+  }
+
+  function tick(el) {
+    el.classList.remove("tick");
+    void el.offsetWidth;
+    el.classList.add("tick");
+  }
+
+  function update() {
+    const diff = target.getTime() - Date.now();
+
+    if (diff <= 0) {
+      Object.values(fields).forEach(el => el.textContent = "00");
+      done.classList.add("show");
+      return;
+    }
+
+    const total = Math.floor(diff / 1000);
+
+    const values = {
+      days: Math.floor(total / 86400),
+      hours: Math.floor((total % 86400) / 3600),
+      minutes: Math.floor((total % 3600) / 60),
+      seconds: total % 60
+    };
+
+    for (const key of Object.keys(values)) {
+      const text = key === "days"
+        ? String(values[key]).padStart(2, "0")
+        : pad(values[key]);
+
+      if (previous[key] !== text) {
+        fields[key].textContent = text;
+        tick(fields[key]);
+        previous[key] = text;
+      }
+    }
+  }
+
+  update();
+  setInterval(update, 250);
+</script>
+</body>
+</html>
